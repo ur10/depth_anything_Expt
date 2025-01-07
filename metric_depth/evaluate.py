@@ -100,6 +100,7 @@ def evaluate(model, test_loader, config, round_vals=True, round_precision=3):
         focal = sample.get('focal', torch.Tensor(
             [715.0873]).cuda())  # This magic number (focal) is only used for evaluating BTS model
         pred = infer(model, image, dataset=sample['dataset'][0], focal=focal)
+        pred_new = pred
         # pred = cv.resize(pred.squeeze().cpu().numpy().astype(np.float32), (FINAL_HEIGHT, FINAL_WIDTH), interpolation=cv.INTER_AREA)
         print(pred)
         print(pred.shape)
@@ -134,14 +135,15 @@ def evaluate(model, test_loader, config, round_vals=True, round_precision=3):
         import torchvision.transforms as transforms
         from zoedepth.utils.misc import colorize
 
-        os.makedirs(config.save_images, exist_ok=True)
+        # os.makedirs(config.save_images, exist_ok=True)
         # def save_image(img, path):
         d = colorize(depth.squeeze().cpu().numpy(), 0, 10)
-        p = colorize(pred.squeeze().cpu().numpy(), 0, 10)
+        p = colorize(pred_new.squeeze().cpu().numpy(), 0, 10)
         im = transforms.ToPILImage()(image.squeeze().cpu())
-        im.save(f'/content/Depth-Anything/metric_depth/depth_map/depth_{i}.png')
+        im.save(f'/content/depth_anything_Expt/metric_depth/depth_map_new/image_{i}.png')
+        np.save(f'/content/depth_anything_Expt/metric_depth/depth_map_new/depth_{i}.npy', pred.squeeze().cpu().numpy())
         # Image.fromarray(d).save(os.path.join(config.save_images, f"{i}_depth.png"))
-        Image.fromarray(p).save(f'/content/Depth-Anything/metric_depth/depth_map/depth_{i}.png')
+        Image.fromarray(p).save(f'/content/depth_anything_Expt/metric_depth/depth_map_new/depth_{i}.png' )
 
 
 
